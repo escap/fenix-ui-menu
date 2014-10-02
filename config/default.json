@@ -10,12 +10,12 @@
             "FR":"PI"
          }
       },
-       {
+      {
          "attrs" : {
             "id" : "analysis"
          },
          "target" : "analysis.html",
-         "label":{
+         "label": {
             "EN":"Analysis",
             "FR":"PI"
          }
