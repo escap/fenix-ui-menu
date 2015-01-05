@@ -15,7 +15,7 @@
             "id" : "analysis"
          },
          "target" : "analysis.html",
-         "label": {
+         "label":{
             "EN":"Analysis",
             "FR":"PI"
          }
@@ -24,14 +24,14 @@
 
    "active" : "analysis",
 
-   "languages" : [ 
-	   	{
-	   		"lang" : "EN",
-	   		"label" : "En"
-	   	},
-	   	{
-	   		"lang" : "FR",
-	   		"label" : "Fr"
-	   	}
+   "languages" : [
+      {
+         "lang" : "EN",
+         "label" : "En"
+      },
+      {
+         "lang" : "FR",
+         "label" : "Fr"
+      }
    ]
 }
