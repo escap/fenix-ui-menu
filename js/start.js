@@ -2,8 +2,8 @@
 define([
     "jquery",
     "require",
-    "text!fx-menu/templates/blank.html"
-    , "bootstrap"
+    "text!fx-menu/templates/blank.html",
+    "bootstrap"
 ], function ($, Require, template) {
 
     'use strict';
