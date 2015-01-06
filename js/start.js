@@ -4,26 +4,28 @@ define([
     "require",
     "text!fx-menu/templates/blank.html"
     , "bootstrap"
-], function($, Require, template){
+], function ($, Require, template) {
 
     'use strict';
 
     var defaultOptions = {
-        container : 'body',
-        url : 'fx-menu/config/default.json',
-        $template : $(template),
-        selectors : {
-            brand : ".navbar-brand",
-            ul : ".fx-ul",
-            right : ".navbar-right"
+        container: 'body',
+        url: 'fx-menu/config/default.json',
+        $template: $(template),
+        selectors: {
+            brand: ".navbar-brand",
+            ul: ".fx-ul",
+            right: ".navbar-right"
         },
-        lang : "EN",
-        css : 'fx-menu/css/fenix-menu.css'
+        lang: "EN",
+        css: 'fx-menu/css/fenix-menu.css'
     };
 
-    function TP( o ){
+    function TP(o) {
 
         this.o = $.extend(true, defaultOptions, o);
+
+        //default: EN
         this.o.lang = this.o.lang.toUpperCase();
 
         if (this.o.conf) {
@@ -37,24 +39,33 @@ define([
 
         var self = this;
 
-        $.getJSON( this.o.url , function ( data ) {
+        $.getJSON(this.o.url, function (data) {
             self.o.conf = data;
-            self.render	();
-        }).error(function(){
-            throw new Error('FENIX Top Menu: please specify a valid configuration file.')
-        })
+            self.render();
+        }).error(function () {
+            throw new Error('FENIX Top Menu: please specify a valid configuration file.');
+        });
     };
 
-    TP.prototype.render = function(){
+    TP.prototype.render = function () {
+
+        //Init auxiliary variables
         this.initVariables();
+
+        //Render the menu
         this.$container.prepend(this.compileTemplate());
+
+        this.initializeMenu();
+
+        //Select an item
         this.selectCurrentItem();
 
-        if (this.o.hasOwnProperty('autoCss')){
+        //Auto import the CSS in the page
+        if (this.o.hasOwnProperty('importCss') && this.o.importCss === true) {
             this.importCss();
         }
 
-        if (this.o.hasOwnProperty('callback') && typeof this.o.callback === 'function'){
+        if (this.o.hasOwnProperty('callback') && typeof this.o.callback === 'function') {
             this.o.callback();
         }
     };
@@ -68,7 +79,7 @@ define([
 
     TP.prototype.importCss = function () {
 
-        if ( this.o.css && this.o.css !== null ) {
+        if (this.o.css && this.o.css !== null) {
             var link = document.createElement("link");
             link.type = "text/css";
             link.rel = "stylesheet";
@@ -81,29 +92,72 @@ define([
 
     TP.prototype.compileTemplate = function () {
         this.renderBrand();
-        this.renderItems( this.$ul );
+        this.renderItems(this.$ul);
         this.renderLeftItems();
         this.renderRightItems();
         this.renderLanguagePicker();
+        this.renderMenuType();
+
         return this.o.$template;
     };
 
-    TP.prototype.renderItems = function ( $ul ) {
+    TP.prototype.renderMenuType = function () {
+
+        switch (this.o.conf.type){
+            case 'fixed-top': this.o.$template.addClass('navbar-fixed-top'); break;
+            case 'fixed-bottom': this.o.$template.addClass('navbar-fixed-bottom'); break;
+            case 'inverse' :  this.o.$template.addClass('navbar-inverse'); break;
+            default: this.o.$template.addClass('navbar-static-top'); break;
+        }
+    };
+
+    TP.prototype.initializeMenu = function () {
+
+        this.$container.find('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
+            // Avoid following the href location when clicking
+            event.preventDefault();
+            // Avoid having the menu to close when clicking
+            event.stopPropagation();
+            // If a menu is already open we close it
+            //$('ul.dropdown-menu [data-toggle=dropdown]').parent().removeClass('open');
+            // opening the one you clicked on
+            $(this).parent().addClass('open');
+
+            var menu = $(this).parent().find("ul");
+            var menupos = menu.offset();
+
+            if ((menupos.left + menu.width()) + 30 > $(window).width()) {
+                var newpos = - menu.width();
+            } else {
+                var newpos = $(this).parent().width();
+            }
+            menu.css({ left:newpos });
+
+        });
+
+    };
+
+    TP.prototype.renderItems = function ($ul) {
 
         var self = this;
 
         if (this.o.conf.items) {
-            $(this.o.conf.items).each(function( index, item ) {
-                if (item.type === 'dropdown'){
-                    self.renderDropdown( $ul, item );
-                } else {
-                    self.renderItem( $ul, item );
-                }
+            $(this.o.conf.items).each(function (index, item) {
+                self.renderItem($ul, item);
             });
         }
     };
 
-    TP.prototype.renderItem = function ( $container, item ) {
+    TP.prototype.renderItem = function  ($container, item, submenu) {
+
+        switch (item.type) {
+            case 'dropdown' : this.renderDropdown($container, item, submenu); break;
+            case 'divider' : this.renderDivider($container); break;
+            default : this.renderSingleItem($container, item); break;
+        }
+    };
+
+    TP.prototype.renderSingleItem = function ($container, item) {
 
         var $li = $("<li></li>"),
             $a = $("<a href='" + ( item.target || '#') + "'>" + item.label[this.o.lang] + "</a>");
@@ -114,40 +168,47 @@ define([
         $container.append($li);
     };
 
-    TP.prototype.renderDropdown = function ($ul, item ) {
+    TP.prototype.renderDropdown = function ($ul, item, submenu) {
 
         var self = this;
 
         var $li = $('<li class="dropdown"></li>'),
-            $a = $('<a href="#" class="dropdown-toggle" data-toggle="dropdown">' + item.label[this.o.lang] + ' <b class="caret"></b></a>'),
+            $a = $('<a href="#" class="dropdown-toggle" data-toggle="dropdown">' + item.label[this.o.lang] + '</b></a>'),
             $children = $('<ul class="dropdown-menu"></ul>');
+
+        if (submenu === true) {
+            $li.addClass('dropdown-submenu');
+        }else {
+            $a.append($('<b class="caret">'));
+        }
 
         $li.append($a).append($children);
 
         //Append dropdown children
-        if (item.hasOwnProperty( 'children' ) && item['children' ] !== null ) {
-            for (var i = 0; i < item['children' ].length; i++) {
+        if (item.hasOwnProperty('children') && item['children'] !== null) {
+            for (var i = 0; i < item['children'].length; i++) {
 
-                if ( item['children'][i].type === 'divider') {
-                    $children.append('<li class="divider"></li>');
-                } else {
-                    self.renderItem($children, item['children'][i]);
-                }
+                self.renderItem($children, item['children'][i], true);
             }
         }
 
         this.addItemAttrs($li, item);
-        $ul.append($li)
+        $ul.append($li);
     };
 
-    TP.prototype.addItemAttrs = function ( $item, conf) {
+    TP.prototype.renderDivider = function ($container) {
 
-        if (conf.hasOwnProperty('attrs')){
+        $container.append('<li class="divider"></li>');
+    };
+
+    TP.prototype.addItemAttrs = function ($item, conf) {
+
+        if (conf.hasOwnProperty('attrs')) {
             var attrs = Object.keys(conf['attrs']);
 
-            for (var i=0; i< attrs.length; i++){
-                if ( conf['attrs'].hasOwnProperty(attrs[i]) ){
-                    $item.attr(attrs[i], conf['attrs'][attrs[i]] );
+            for (var i = 0; i < attrs.length; i++) {
+                if (conf['attrs'].hasOwnProperty(attrs[i])) {
+                    $item.attr(attrs[i], conf['attrs'][attrs[i]]);
                 }
             }
         }
@@ -158,8 +219,8 @@ define([
     TP.prototype.renderBrand = function () {
 
         if (this.o.conf.brand) {
-            this.$brand.attr('href', this.o.conf.brand.target || '#' );
-            if (this.o.conf.brand.url)   {
+            this.$brand.attr('href', this.o.conf.brand.target || '#');
+            if (this.o.conf.brand.url) {
                 this.$brand.css('background-image', 'url(' + this.o.conf.brand.url + ')');
             }
         }
@@ -184,13 +245,13 @@ define([
         return this.o.$template;
     };
 
-    TP.prototype.renderLanguagePicker = function ( ) {
+    TP.prototype.renderLanguagePicker = function () {
 
         var $li = $('<li></li>'),
             $langPicker = $('<ul class="lang_picker"></ul>');
 
         if (this.o.conf.languages) {
-            $(this.o.conf.languages).each(function( index, lang ) {
+            $(this.o.conf.languages).each(function (index, lang) {
                 var $lang = $("<li></li>"),
                     $a = $("<a href='" + ( lang.target || '#') + "'>" + lang.label + "</a>");
                 $lang.prepend($a);
@@ -205,12 +266,12 @@ define([
     TP.prototype.selectCurrentItem = function () {
 
         if (this.o.conf) {
-            this.o.$template.find('li[id="'+this.o.active+'"] ').addClass("active")
-                .find("a").attr("href" , "#");
+            this.o.$template.find('li[id="' + this.o.active + '"] ').addClass("active")
+                .find("a").attr("href", "#");
         } else {
             if (this.o.conf.active) {
-                this.o.$template.find('li[id="'+this.o.conf.active+'"] ').addClass("active")
-                    .find("a").attr("href" , "#");
+                this.o.$template.find('li[id="' + this.o.conf.active + '"] ').addClass("active")
+                    .find("a").attr("href", "#");
             }
         }
 

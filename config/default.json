@@ -1,37 +1,87 @@
 {
-   "items":[
-      {
-         "attrs" : {
-            "id" : "home"
-         },
-         "target" : "index.html",
-         "label":{
-            "EN":"Home",
-            "FR":"PI"
-         }
+  "items": [
+    {
+      "attrs": {
+        "id": "home"
       },
-      {
-         "attrs" : {
-            "id" : "analysis"
-         },
-         "target" : "analysis.html",
-         "label":{
-            "EN":"Analysis",
-            "FR":"PI"
-         }
+      "target": "index.html",
+      "label": {
+        "EN": "Home",
+        "FR": "PI"
       }
-   ],
-
-   "active" : "analysis",
-
-   "languages" : [
-      {
-         "lang" : "EN",
-         "label" : "En"
+    },
+    {
+      "type": "dropdown",
+      "attrs": {
+        "id": "dropdown"
       },
-      {
-         "lang" : "FR",
-         "label" : "Fr"
+      "children": [
+        {
+          "type": "dropdown",
+          "attrs": {
+            "id": "sub-dropdown"
+          },
+          "children": [
+            {
+              "type": "item",
+              "attrs": {
+                "id": "item1"
+              },
+              "target": "item.html",
+              "label": {
+                "EN": "Item 1",
+                "FR": "PI"
+              }
+            },
+            {
+              "type": "item",
+              "attrs": {
+                "id": "item2"
+              },
+              "target": "item.html",
+              "label": {
+                "EN": "Item 2",
+                "FR": "PI"
+              }
+            },
+            {
+              "type":"divider"
+            },
+            {
+              "type": "item",
+              "attrs": {
+                "id": "item 3"
+              },
+              "target": "item.html",
+              "label": {
+                "EN": "Item 3",
+                "FR": "PI"
+              }
+            }
+          ],
+          "label": {
+            "EN": "Level 2",
+            "FR": "PI"
+          }
+        }
+      ],
+      "label": {
+        "EN": "Level 1",
+        "FR": "PI"
       }
-   ]
+    }
+  ],
+
+  "type" : "fixed-top",
+
+  "languages": [
+    {
+      "lang": "EN",
+      "label": "En"
+    },
+    {
+      "lang": "FR",
+      "label": "Fr"
+    }
+  ]
 }
