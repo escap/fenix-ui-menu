@@ -11,7 +11,7 @@ define([
     var defaultOptions = {
         container: 'body',
         url: 'fx-menu/config/default.json',
-        $template: $(template),
+        template: template,
         selectors: {
             brand: ".navbar-brand",
             ul: ".fx-ul",
@@ -23,7 +23,7 @@ define([
 
     function TP(o) {
 
-        this.o = $.extend(true, defaultOptions, o);
+        this.o = $.extend(true, {}, defaultOptions, o);
 
         //default: EN
         this.o.lang = this.o.lang.toUpperCase();
@@ -57,6 +57,9 @@ define([
 
         this.initializeMenu();
 
+        //disable items
+        this.disable(this.o.disable || []);
+
         //Select an item
         this.selectCurrentItem();
 
@@ -71,9 +74,10 @@ define([
     };
 
     TP.prototype.initVariables = function () {
-        this.$ul = this.o.$template.find(this.o.selectors.ul);
-        this.$brand = this.o.$template.find(this.o.selectors.brand);
-        this.$right = this.o.$template.find(this.o.selectors.right);
+        this.$template = $(this.o.template);
+        this.$ul = this.$template.find(this.o.selectors.ul);
+        this.$brand = this.$template.find(this.o.selectors.brand);
+        this.$right = this.$template.find(this.o.selectors.right);
         this.$container = $(this.o.container);
     };
 
@@ -98,16 +102,16 @@ define([
         this.renderLanguagePicker();
         this.renderMenuType();
 
-        return this.o.$template;
+        return this.$template;
     };
 
     TP.prototype.renderMenuType = function () {
 
         switch (this.o.conf.type){
-            case 'fixed-top': this.o.$template.addClass('navbar-fixed-top'); break;
-            case 'fixed-bottom': this.o.$template.addClass('navbar-fixed-bottom'); break;
-            case 'inverse' :  this.o.$template.addClass('navbar-inverse'); break;
-            default: this.o.$template.addClass('navbar-static-top'); break;
+            case 'fixed-top': this.$template.addClass('navbar-fixed-top'); break;
+            case 'fixed-bottom': this.$template.addClass('navbar-fixed-bottom'); break;
+            case 'inverse' :  this.$template.addClass('navbar-inverse'); break;
+            default: this.$template.addClass('navbar-static-top'); break;
         }
     };
 
@@ -225,7 +229,7 @@ define([
             }
         }
 
-        return this.o.$template;
+        return this.$template;
     };
 
     TP.prototype.renderLeftItems = function () {
@@ -233,7 +237,7 @@ define([
         if (this.o.conf.left) {
         }
 
-        return this.o.$template;
+        return this.$template;
     };
 
     TP.prototype.renderRightItems = function () {
@@ -242,7 +246,7 @@ define([
             this.renderItems(this.$right)
         }
 
-        return this.o.$template;
+        return this.$template;
     };
 
     TP.prototype.renderLanguagePicker = function () {
@@ -260,22 +264,59 @@ define([
         }
 
         this.$right.append($li.append($langPicker));
-        return this.o.$template;
+        return this.$template;
     };
 
     TP.prototype.selectCurrentItem = function () {
 
         if (this.o.conf) {
-            this.o.$template.find('li[id="' + this.o.active + '"] ').addClass("active")
+            this.$template.find('li[id="' + this.o.active + '"] ').addClass("active")
                 .find("a").attr("href", "#");
         } else {
             if (this.o.conf.active) {
-                this.o.$template.find('li[id="' + this.o.conf.active + '"] ').addClass("active")
+                this.$template.find('li[id="' + this.o.conf.active + '"] ').addClass("active")
                     .find("a").attr("href", "#");
             }
         }
 
-        return this.o.$template;
+        return this.$template;
+    };
+
+    TP.prototype.disableItem = function ( item ) {
+
+        this.$template.find('li[id="' + item + '"] ').addClass("disabled");
+    };
+
+    TP.prototype.disable = function ( items ) {
+
+        if (Array.isArray(items)) {
+            for (var i = 0; i < items.length; i++) {
+                this.disableItem(items[i]);
+            }
+        } else {
+            this.disableItem(items);
+        }
+
+        this.$template.find("li.disabled a").click(function() {
+            return false;
+        });
+    };
+
+    TP.prototype.activateItem = function ( item ) {
+
+        this.$template.find('li[id="' + item + '"] ').removeClass("disabled");
+    };
+
+    TP.prototype.activate = function ( items ) {
+
+        if (Array.isArray(items)) {
+            for (var i = 0; i < items.length; i++) {
+                this.activateItem(items[i]);
+            }
+        } else {
+            this.activateItem(items);
+        }
+
     };
 
     return TP;
