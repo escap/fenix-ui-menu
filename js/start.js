@@ -152,7 +152,7 @@ define([
         }
     };
 
-    TP.prototype.renderItem = function  ($container, item, submenu) {
+    TP.prototype.renderItem = function ($container, item, submenu) {
 
         switch (item.type) {
             case 'dropdown' : this.renderDropdown($container, item, submenu); break;
@@ -297,7 +297,8 @@ define([
             this.disableItem(items);
         }
 
-        this.$template.find("li.disabled a").click(function() {
+        this.$template.find("li.disabled a").on('click', function(e) {
+            e.preventDefault();
             return false;
         });
     };
@@ -316,6 +317,8 @@ define([
         } else {
             this.activateItem(items);
         }
+
+        this.$template.find("li a").off('click');
 
     };
 
