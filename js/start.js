@@ -21,7 +21,7 @@ define([
         css: 'fx-menu/css/fenix-menu.css'
     };
 
-    function TP(o) {
+    function FM(o) {
 
         this.o = $.extend(true, {}, defaultOptions, o);
 
@@ -35,7 +35,7 @@ define([
         }
     }
 
-    TP.prototype.loadConfiguration = function () {
+    FM.prototype.loadConfiguration = function () {
 
         var self = this;
 
@@ -47,7 +47,7 @@ define([
         });
     };
 
-    TP.prototype.render = function () {
+    FM.prototype.render = function () {
 
         //Init auxiliary variables
         this.initVariables();
@@ -68,20 +68,27 @@ define([
             this.importCss();
         }
 
+        // Create breadcrumb
+        if (this.o.conf.hasOwnProperty('breadcrumb') && this.o.conf.breadcrumb.active === true) {
+            this.renderBreadcrumb();
+        }
+
         if (this.o.hasOwnProperty('callback') && typeof this.o.callback === 'function') {
             this.o.callback();
         }
+
     };
 
-    TP.prototype.initVariables = function () {
+    FM.prototype.initVariables = function () {
         this.$template = $(this.o.template);
         this.$ul = this.$template.find(this.o.selectors.ul);
         this.$brand = this.$template.find(this.o.selectors.brand);
         this.$right = this.$template.find(this.o.selectors.right);
         this.$container = $(this.o.container);
+        this.$breadCrumbConfig = $(this.o.breadcrumb);
     };
 
-    TP.prototype.importCss = function () {
+    FM.prototype.importCss = function () {
 
         if (this.o.css && this.o.css !== null) {
             var link = document.createElement("link");
@@ -94,7 +101,7 @@ define([
         return false;
     };
 
-    TP.prototype.compileTemplate = function () {
+    FM.prototype.compileTemplate = function () {
         this.renderBrand();
         this.renderItems(this.$ul);
         this.renderLeftItems();
@@ -105,7 +112,7 @@ define([
         return this.$template;
     };
 
-    TP.prototype.renderMenuType = function () {
+    FM.prototype.renderMenuType = function () {
 
         switch (this.o.conf.type){
             case 'fixed-top': this.$template.addClass('navbar-fixed-top'); break;
@@ -115,7 +122,7 @@ define([
         }
     };
 
-    TP.prototype.initializeMenu = function () {
+    FM.prototype.initializeMenu = function () {
 
         this.$container.find('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
             // Avoid following the href location when clicking
@@ -141,7 +148,7 @@ define([
 
     };
 
-    TP.prototype.renderItems = function ($ul) {
+    FM.prototype.renderItems = function ($ul) {
 
         var self = this;
 
@@ -152,7 +159,7 @@ define([
         }
     };
 
-    TP.prototype.renderItem = function ($container, item, submenu) {
+    FM.prototype.renderItem = function ($container, item, submenu) {
 
         switch (item.type) {
             case 'dropdown' : this.renderDropdown($container, item, submenu); break;
@@ -161,7 +168,7 @@ define([
         }
     };
 
-    TP.prototype.renderSingleItem = function ($container, item) {
+    FM.prototype.renderSingleItem = function ($container, item) {
 
         var $li = $("<li></li>"),
             $a = $("<a href='" + ( item.target || '#') + "'>" + item.label[this.o.lang] + "</a>");
@@ -172,7 +179,7 @@ define([
         $container.append($li);
     };
 
-    TP.prototype.renderDropdown = function ($ul, item, submenu) {
+    FM.prototype.renderDropdown = function ($ul, item, submenu) {
 
         var self = this;
 
@@ -200,12 +207,12 @@ define([
         $ul.append($li);
     };
 
-    TP.prototype.renderDivider = function ($container) {
+    FM.prototype.renderDivider = function ($container) {
 
         $container.append('<li class="divider"></li>');
     };
 
-    TP.prototype.addItemAttrs = function ($item, conf) {
+    FM.prototype.addItemAttrs = function ($item, conf) {
 
         if (conf.hasOwnProperty('attrs')) {
             var attrs = Object.keys(conf['attrs']);
@@ -220,7 +227,7 @@ define([
         return $item;
     };
 
-    TP.prototype.renderBrand = function () {
+    FM.prototype.renderBrand = function () {
 
         if (this.o.conf.brand) {
             this.$brand.attr('href', this.o.conf.brand.target || '#');
@@ -232,7 +239,7 @@ define([
         return this.$template;
     };
 
-    TP.prototype.renderLeftItems = function () {
+    FM.prototype.renderLeftItems = function () {
 
         if (this.o.conf.left) {
         }
@@ -240,7 +247,7 @@ define([
         return this.$template;
     };
 
-    TP.prototype.renderRightItems = function () {
+    FM.prototype.renderRightItems = function () {
 
         if (this.o.conf.right) {
             this.renderItems(this.$right)
@@ -249,7 +256,7 @@ define([
         return this.$template;
     };
 
-    TP.prototype.renderLanguagePicker = function () {
+    FM.prototype.renderLanguagePicker = function () {
 
         var $li = $('<li></li>'),
             $langPicker = $('<ul class="lang_picker"></ul>');
@@ -267,7 +274,7 @@ define([
         return this.$template;
     };
 
-    TP.prototype.selectCurrentItem = function () {
+    FM.prototype.selectCurrentItem = function () {
 
         if (this.o.conf) {
             this.$template.find('li[id="' + this.o.active + '"] ').addClass("active")
@@ -282,12 +289,12 @@ define([
         return this.$template;
     };
 
-    TP.prototype.disableItem = function ( item ) {
+    FM.prototype.disableItem = function ( item ) {
 
         this.$template.find('li[id="' + item + '"] ').addClass("disabled");
     };
 
-    TP.prototype.disable = function ( items ) {
+    FM.prototype.disable = function ( items ) {
 
         if (Array.isArray(items)) {
             for (var i = 0; i < items.length; i++) {
@@ -303,12 +310,12 @@ define([
         });
     };
 
-    TP.prototype.activateItem = function ( item ) {
+    FM.prototype.activateItem = function ( item ) {
 
         this.$template.find('li[id="' + item + '"] ').removeClass("disabled");
     };
 
-    TP.prototype.activate = function ( items ) {
+    FM.prototype.activate = function ( items ) {
 
         if (Array.isArray(items)) {
             for (var i = 0; i < items.length; i++) {
@@ -319,8 +326,58 @@ define([
         }
 
         this.$template.find("li a").off('click');
+    };
+
+    FM.prototype.renderBreadcrumb = function () {
+
+        if (!this.o.conf.breadcrumb.hasOwnProperty('container')){
+            console.error("FENIX menu: impossible to find breadcrumb container");
+            return
+        }
+
+        this.findActivePath({
+            items : this.o.conf.items,
+            callback : $.proxy(this.addItemsToBreadcrumb, this),
+            path : []
+        });
+    };
+
+    FM.prototype.findActivePath = function ( obj ) {
+
+        var self = this;
+
+        if (Array.isArray(obj.items)) {
+            $(obj.items).each(function (index, item) {
+
+                var o = $.extend(true, {}, obj);
+                o['path'].push(item);
+
+                if (item.hasOwnProperty("attrs") && item.attrs.id === self.o.active) {
+                    o.callback(o['path']);
+                } else {
+                    if (item.hasOwnProperty('children')){
+                        o['items'].items = item.children;
+                        self.findActivePath(o);
+                    }
+                }
+            });
+        }
+    };
+
+    FM.prototype.addItemsToBreadcrumb = function ( path ) {
+
+        var self = this;
+
+        this.$bcContainer = $(this.o.conf.breadcrumb.container);
+
+        if (Array.isArray(path)) {
+            for (var i = 0; i < path.length; i++) {
+                self.$bcContainer.append(path[i].label[self.o.lang]);
+            }
+        }
 
     };
 
-    return TP;
+
+    return FM;
 });
