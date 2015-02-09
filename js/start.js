@@ -24,6 +24,10 @@ define([
     };
 
     function FM(o) {
+       this.refresh(o);
+    }
+
+    FM.prototype.refresh = function(o){
 
         this.o = $.extend(true, {}, defaultOptions, o);
 
@@ -35,7 +39,7 @@ define([
         } else {
             this.loadConfiguration();
         }
-    }
+    };
 
     FM.prototype.loadConfiguration = function () {
 
