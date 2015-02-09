@@ -61,6 +61,7 @@ require([
 + type: menu type. Possible values are: 'fixed-top', 'fixed-bottom', 'static-top'. Default: 'static-top'.
 + languages: languages to display in the right side of the menu.
 + brand: object that have two optionals attributes. 'target': href of the link on the brand. 'url': URL of the brand background image.
++ rightItems: the menu items array to display in the right side
 
  Every item accepts the following params:
  + attrs: hash map of attributes of the final HTML element.

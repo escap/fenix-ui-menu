@@ -113,11 +113,12 @@ define([
     };
 
     FM.prototype.compileTemplate = function () {
+
         this.customizeMenu();
         this.renderBrand();
-        this.renderItems(this.$ul);
+        this.renderItems(this.$ul, this.o.conf.items);
         this.renderLeftItems();
-        this.renderRightItems();
+        this.renderItems(this.$right, this.o.conf.right);
         this.renderLanguagePicker();
         this.renderMenuType();
 
@@ -127,7 +128,7 @@ define([
     FM.prototype.customizeMenu = function () {
 
         if (!window.fx_menu_counter){
-            window.fx_menu_counter =0;
+            window.fx_menu_counter = 0;
         }
 
         var klass =this.o.className ? this.o.className : (window.fx_menu_counter++);
@@ -183,15 +184,13 @@ define([
 
     };
 
-    FM.prototype.renderItems = function ($ul) {
+    FM.prototype.renderItems = function ($ul, items) {
 
         var self = this;
 
-        if (this.o.conf.items) {
-            $(this.o.conf.items).each(function (index, item) {
-                self.renderItem($ul, item);
-            });
-        }
+        $(items).each(function (index, item) {
+            self.renderItem($ul, item);
+        });
     };
 
     FM.prototype.renderItem = function ($container, item, submenu) {
@@ -293,15 +292,6 @@ define([
     FM.prototype.renderLeftItems = function () {
 
         if (this.o.conf.left) {
-        }
-
-        return this.$template;
-    };
-
-    FM.prototype.renderRightItems = function () {
-
-        if (this.o.conf.right) {
-            this.renderItems(this.$right)
         }
 
         return this.$template;
