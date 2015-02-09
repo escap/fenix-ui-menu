@@ -126,15 +126,18 @@ define([
 
     FM.prototype.customizeMenu = function () {
 
-        if (this.o.className) {
-
-            console.log(this.$template.addClass(this.o.className))
-
+        if (!window.fx_menu_counter){
+            window.fx_menu_counter =0;
         }
+
+        var klass =this.o.className ? this.o.className : (window.fx_menu_counter++);
+
+        this.$template.addClass(klass);
+        this.$template.find('[data-target="#fx-navbar-collapse"]').attr('data-target', "#fx-navbar-collapse".concat(klass));
+        this.$template.find('#fx-navbar-collapse').attr('id', "fx-navbar-collapse".concat(klass));
 
         return this.$template;
     };
-
 
     FM.prototype.renderMenuType = function () {
 
@@ -404,7 +407,7 @@ define([
                     o.callback(o['path']);
                 } else {
                     if (item.hasOwnProperty('children')) {
-                        o['items'].items = item.children;
+                        o['items'] = item.children;
                         self.findActivePath(o);
                     }
                 }
@@ -463,7 +466,7 @@ define([
 
         var $li = $('<li>'),
             $a = $('<a>', {
-                target: isLast ? '#' : item.target,
+                href: isLast ? '#' : item.target,
                 'class': isLast ? 'active' : '',
                 text: item.breadcrumbLabel ? item.breadcrumbLabel[this.o.lang] : item.label[this.o.lang]
             });
