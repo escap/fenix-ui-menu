@@ -41,10 +41,16 @@ require([
 #Initialization params
 
 + active: the ID of the item to activate. To use this param the item has to have an id defined within 'attrs' item param (see below Configuration structure).
++ breadcrumb : configuration for breadcrumb
+    + active : boolean, activate or deactivate the breadcrumb rendering
+    + container : where the breadcrumb has to be displayed
+    + showHome: if breadcrumb is shown, always show 'Home' as first item
 + callback: JS function invoked after the menu rendering.
++ className: CSS class of the menu.
 + config: explicit configuration.
 + container: where the menu has to be displayed. It is optional and default is 'body'. Use it only with type='static-top'.
 + css: URL of the style sheet.
++ eventPrefix: On click on any menu item an AmplifyJS event is risen. The event topic is formed by this parameter concatenated to the item id if present, or in substitution the suffix 'item'. The item is sent as event payload.
 + importCss: set to 'true' to import the Css style sheet specified in the 'css' params.
 + lang: language of the labels to display.
 + url: URL of the configuration file.
@@ -58,6 +64,7 @@ require([
 
  Every item accepts the following params:
  + attrs: hash map of attributes of the final HTML element.
+ + breadcrumbLabel: multilingual labels of the breadcrumb item. If it is not specified and breadcrumb is displayed 'label' will be displayed
  + target: in case the item type is 'item' this is the href value of the 'a' HTML element.
  + label: multilingual labels of the item.
  + children: in case the item type is 'dropdown', it is used to defined the dropdown children items.
@@ -136,7 +143,16 @@ require([
         "EN": "Level 1",
         "FR": "PI"
       }
-    }
+    },
+     {
+          "attrs": {
+            "id": "login"
+          },
+          "label": {
+            "EN": "Login",
+            "FR": ""
+          }
+        }
   ],
 
   "type" : "fixed-top",
