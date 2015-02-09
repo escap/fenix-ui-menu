@@ -3,6 +3,7 @@ define([
     "jquery",
     "require",
     "text!fx-menu/templates/blank.html",
+    "amplify",
     "bootstrap"
 ], function ($, Require, template) {
 
@@ -18,10 +19,11 @@ define([
             right: ".navbar-right"
         },
         lang: "EN",
-        css: 'fx-menu/css/fenix-menu.css'
+        css: 'fx-menu/css/fenix-menu.css',
+        eventPrefix : 'fx.menu.'
     };
 
-    function TP(o) {
+    function FM(o) {
 
         this.o = $.extend(true, {}, defaultOptions, o);
 
@@ -35,7 +37,7 @@ define([
         }
     }
 
-    TP.prototype.loadConfiguration = function () {
+    FM.prototype.loadConfiguration = function () {
 
         var self = this;
 
@@ -47,10 +49,13 @@ define([
         });
     };
 
-    TP.prototype.render = function () {
+    FM.prototype.render = function () {
 
         //Init auxiliary variables
         this.initVariables();
+
+        //Reset menu. Useful if the menu configuration has to change dynamically
+        this.resetMenu();
 
         //Render the menu
         this.$container.prepend(this.compileTemplate());
@@ -68,12 +73,18 @@ define([
             this.importCss();
         }
 
+        // Create breadcrumb
+        if (this.o.hasOwnProperty('breadcrumb') && this.o.breadcrumb.active === true) {
+            this.renderBreadcrumb();
+        }
+
         if (this.o.hasOwnProperty('callback') && typeof this.o.callback === 'function') {
             this.o.callback();
         }
+
     };
 
-    TP.prototype.initVariables = function () {
+    FM.prototype.initVariables = function () {
         this.$template = $(this.o.template);
         this.$ul = this.$template.find(this.o.selectors.ul);
         this.$brand = this.$template.find(this.o.selectors.brand);
@@ -81,7 +92,16 @@ define([
         this.$container = $(this.o.container);
     };
 
-    TP.prototype.importCss = function () {
+    FM.prototype.resetMenu = function () {
+
+        this.$ul.empty();
+        this.$right.empty();
+        if (this.o.container !== 'body'){
+            this.$container.empty();
+        }
+    };
+
+    FM.prototype.importCss = function () {
 
         if (this.o.css && this.o.css !== null) {
             var link = document.createElement("link");
@@ -90,11 +110,10 @@ define([
             link.href = Require.toUrl(this.o.css);
             document.getElementsByTagName("head")[0].appendChild(link);
         }
-
-        return false;
     };
 
-    TP.prototype.compileTemplate = function () {
+    FM.prototype.compileTemplate = function () {
+        this.customizeMenu();
         this.renderBrand();
         this.renderItems(this.$ul);
         this.renderLeftItems();
@@ -105,19 +124,39 @@ define([
         return this.$template;
     };
 
-    TP.prototype.renderMenuType = function () {
+    FM.prototype.customizeMenu = function () {
 
-        switch (this.o.conf.type){
-            case 'fixed-top': this.$template.addClass('navbar-fixed-top'); break;
-            case 'fixed-bottom': this.$template.addClass('navbar-fixed-bottom'); break;
-            case 'inverse' :  this.$template.addClass('navbar-inverse'); break;
-            default: this.$template.addClass('navbar-static-top'); break;
+        if (this.o.className) {
+
+            console.log(this.$template.addClass(this.o.className))
+
+        }
+
+        return this.$template;
+    };
+
+
+    FM.prototype.renderMenuType = function () {
+
+        switch (this.o.conf.type) {
+            case 'fixed-top':
+                this.$template.addClass('navbar-fixed-top');
+                break;
+            case 'fixed-bottom':
+                this.$template.addClass('navbar-fixed-bottom');
+                break;
+            case 'inverse' :
+                this.$template.addClass('navbar-inverse');
+                break;
+            default:
+                this.$template.addClass('navbar-static-top');
+                break;
         }
     };
 
-    TP.prototype.initializeMenu = function () {
+    FM.prototype.initializeMenu = function () {
 
-        this.$container.find('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
+        this.$container.find('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
             // Avoid following the href location when clicking
             event.preventDefault();
             // Avoid having the menu to close when clicking
@@ -131,17 +170,17 @@ define([
             var menupos = menu.offset();
 
             if ((menupos.left + menu.width()) + 30 > $(window).width()) {
-                var newpos = - menu.width();
+                var newpos = -menu.width();
             } else {
                 var newpos = $(this).parent().width();
             }
-            menu.css({ left:newpos });
+            menu.css({left: newpos});
 
         });
 
     };
 
-    TP.prototype.renderItems = function ($ul) {
+    FM.prototype.renderItems = function ($ul) {
 
         var self = this;
 
@@ -152,27 +191,43 @@ define([
         }
     };
 
-    TP.prototype.renderItem = function ($container, item, submenu) {
+    FM.prototype.renderItem = function ($container, item, submenu) {
 
         switch (item.type) {
-            case 'dropdown' : this.renderDropdown($container, item, submenu); break;
-            case 'divider' : this.renderDivider($container); break;
-            default : this.renderSingleItem($container, item); break;
+            case 'dropdown' :
+                this.renderDropdown($container, item, submenu);
+                break;
+            case 'divider' :
+                this.renderDivider($container);
+                break;
+            default :
+                this.renderSingleItem($container, item);
+                break;
         }
     };
 
-    TP.prototype.renderSingleItem = function ($container, item) {
+    FM.prototype.renderSingleItem = function ($container, item) {
 
         var $li = $("<li></li>"),
             $a = $("<a href='" + ( item.target || '#') + "'>" + item.label[this.o.lang] + "</a>");
 
         this.addItemAttrs($li, item);
 
+        $a.on('click', $.proxy(function () {
+            var topic = this.o.eventPrefix;
+
+            if (item.hasOwnProperty('attrs')) {
+                topic += item.attrs.id ? item.attrs.id : 'item';
+            }
+
+            amplify.publish(topic, item)
+        }, this));
+
         $li.append($a);
         $container.append($li);
     };
 
-    TP.prototype.renderDropdown = function ($ul, item, submenu) {
+    FM.prototype.renderDropdown = function ($ul, item, submenu) {
 
         var self = this;
 
@@ -182,7 +237,7 @@ define([
 
         if (submenu === true) {
             $li.addClass('dropdown-submenu');
-        }else {
+        } else {
             $a.append($('<b class="caret">'));
         }
 
@@ -200,12 +255,12 @@ define([
         $ul.append($li);
     };
 
-    TP.prototype.renderDivider = function ($container) {
+    FM.prototype.renderDivider = function ($container) {
 
         $container.append('<li class="divider"></li>');
     };
 
-    TP.prototype.addItemAttrs = function ($item, conf) {
+    FM.prototype.addItemAttrs = function ($item, conf) {
 
         if (conf.hasOwnProperty('attrs')) {
             var attrs = Object.keys(conf['attrs']);
@@ -220,7 +275,7 @@ define([
         return $item;
     };
 
-    TP.prototype.renderBrand = function () {
+    FM.prototype.renderBrand = function () {
 
         if (this.o.conf.brand) {
             this.$brand.attr('href', this.o.conf.brand.target || '#');
@@ -232,7 +287,7 @@ define([
         return this.$template;
     };
 
-    TP.prototype.renderLeftItems = function () {
+    FM.prototype.renderLeftItems = function () {
 
         if (this.o.conf.left) {
         }
@@ -240,7 +295,7 @@ define([
         return this.$template;
     };
 
-    TP.prototype.renderRightItems = function () {
+    FM.prototype.renderRightItems = function () {
 
         if (this.o.conf.right) {
             this.renderItems(this.$right)
@@ -249,9 +304,9 @@ define([
         return this.$template;
     };
 
-    TP.prototype.renderLanguagePicker = function () {
+    FM.prototype.renderLanguagePicker = function () {
 
-        var $li = $('<li></li>'),
+        var $li = $('<li class="lang_picker_holder"></li>'),
             $langPicker = $('<ul class="lang_picker"></ul>');
 
         if (this.o.conf.languages) {
@@ -267,7 +322,7 @@ define([
         return this.$template;
     };
 
-    TP.prototype.selectCurrentItem = function () {
+    FM.prototype.selectCurrentItem = function () {
 
         if (this.o.conf) {
             this.$template.find('li[id="' + this.o.active + '"] ').addClass("active")
@@ -282,12 +337,12 @@ define([
         return this.$template;
     };
 
-    TP.prototype.disableItem = function ( item ) {
+    FM.prototype.disableItem = function (item) {
 
         this.$template.find('li[id="' + item + '"] ').addClass("disabled");
     };
 
-    TP.prototype.disable = function ( items ) {
+    FM.prototype.disable = function (items) {
 
         if (Array.isArray(items)) {
             for (var i = 0; i < items.length; i++) {
@@ -297,18 +352,18 @@ define([
             this.disableItem(items);
         }
 
-        this.$template.find("li.disabled a").on('click', function(e) {
+        this.$template.find("li.disabled a").on('click', function (e) {
             e.preventDefault();
             return false;
         });
     };
 
-    TP.prototype.activateItem = function ( item ) {
+    FM.prototype.activateItem = function (item) {
 
         this.$template.find('li[id="' + item + '"] ').removeClass("disabled");
     };
 
-    TP.prototype.activate = function ( items ) {
+    FM.prototype.activate = function (items) {
 
         if (Array.isArray(items)) {
             for (var i = 0; i < items.length; i++) {
@@ -319,8 +374,102 @@ define([
         }
 
         this.$template.find("li a").off('click');
+    };
+
+    FM.prototype.renderBreadcrumb = function () {
+
+        if (!this.o.breadcrumb.hasOwnProperty('container') || $(this.o.breadcrumb.container).length === 0) {
+            console.error("FENIX menu: impossible to find breadcrumb container");
+            return
+        }
+
+        this.findActivePath({
+            items: this.o.conf.items,
+            callback: $.proxy(this.addItemsToBreadcrumb, this),
+            path: []
+        });
+    };
+
+    FM.prototype.findActivePath = function (obj) {
+
+        var self = this;
+
+        if (Array.isArray(obj.items)) {
+            $(obj.items).each(function (index, item) {
+
+                var o = $.extend(true, {}, obj);
+                o['path'].push(item);
+
+                if (item.hasOwnProperty("attrs") && item.attrs.id === self.o.active) {
+                    o.callback(o['path']);
+                } else {
+                    if (item.hasOwnProperty('children')) {
+                        o['items'].items = item.children;
+                        self.findActivePath(o);
+                    }
+                }
+            });
+        }
+    };
+
+    /*FM.prototype.findActivePath = function ( items ) {
+
+     var self = this;
+
+     if (Array.isArray(items)) {
+     $(items).each(function (index, item) {
+
+     if (item.hasOwnProperty("attrs") && item.attrs.id === self.o.active) {
+     return [item];
+     } else {
+     if (item.hasOwnProperty('children')){
+     var path = self.findActivePath( item.children);
+     if (path){
+     path.unshift(item);
+     return path;
+     }
+     }
+     }
+     });
+     }
+
+     return null;
+     };*/
+
+    FM.prototype.addItemsToBreadcrumb = function (path) {
+
+        var self = this;
+
+        this.$brList = $('<ol>', {
+            'class': 'breadcrumb'
+        });
+
+        $(this.o.breadcrumb.container).append(this.$brList);
+
+        //Show always a link to home
+        if (this.o.breadcrumb.showHome === true) {
+            this.$brList.append($('<li><a href="./index.html"><i class="fa fa-home"></i></a></li>'));
+        }
+
+        if (Array.isArray(path)) {
+            for (var i = 0; i < path.length; i++) {
+                self.appendBreadcrumbItem(path[i], (i === path.length));
+            }
+        }
 
     };
 
-    return TP;
+    FM.prototype.appendBreadcrumbItem = function (item, isLast) {
+
+        var $li = $('<li>'),
+            $a = $('<a>', {
+                target: isLast ? '#' : item.target,
+                'class': isLast ? 'active' : '',
+                text: item.breadcrumbLabel ? item.breadcrumbLabel[this.o.lang] : item.label[this.o.lang]
+            });
+
+        this.$brList.append($li.append($a));
+    };
+
+    return FM;
 });
