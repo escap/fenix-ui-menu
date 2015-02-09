@@ -118,7 +118,7 @@ define([
         this.renderBrand();
         this.renderItems(this.$ul, this.o.conf.items);
         this.renderLeftItems();
-        this.renderItems(this.$right, this.o.conf.right);
+        this.renderItems(this.$right, this.o.conf.rightItems);
         this.renderLanguagePicker();
         this.renderMenuType();
 
