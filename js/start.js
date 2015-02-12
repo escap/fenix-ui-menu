@@ -100,8 +100,12 @@ define([
 
         this.$ul.empty();
         this.$right.empty();
+
         if (this.o.container !== 'body'){
             this.$container.empty();
+        } else {
+            var selector = this.o.className ? 'nav.fx-menu.'+ this.o.className: 'nav.fx-menu';
+            $('body').find(selector).remove();
         }
     };
 
