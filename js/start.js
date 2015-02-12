@@ -45,12 +45,20 @@ define([
 
         var self = this;
 
-        $.getJSON(this.o.url, function (data) {
-            self.o.conf = data;
-            self.render();
-        }).error(function () {
-            throw new Error('FENIX Top Menu: please specify a valid configuration file.');
-        });
+        if(this.o.config)
+        {
+            self.o.conf = this.o.config;
+            self.render();        	
+        }
+        else
+        {
+	        $.getJSON(this.o.url, function (data) {
+	            self.o.conf = data;
+	            self.render();
+	        }).error(function () {
+	            throw new Error('FENIX Top Menu: please specify a valid configuration file.');
+	        });
+	    }
     };
 
     FM.prototype.render = function () {
