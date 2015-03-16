@@ -18,6 +18,7 @@ define([
             ul: ".fx-ul",
             right: ".navbar-right"
         },
+        logo: true,
         lang: "EN",
         css: 'fx-menu/css/fenix-menu.css',
         eventPrefix : 'fx.menu.'
@@ -295,11 +296,13 @@ define([
 
     FM.prototype.renderBrand = function () {
 
-        if (this.o.conf.brand) {
+        if (this.o.conf.brand && this.o.logo) {
             this.$brand.attr('href', this.o.conf.brand.target || '#');
             if (this.o.conf.brand.url) {
                 this.$brand.css('background-image', 'url(' + this.o.conf.brand.url + ')');
             }
+        } else {
+            this.$brand.hide();
         }
 
         return this.$template;
