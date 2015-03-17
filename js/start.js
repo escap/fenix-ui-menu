@@ -46,18 +46,15 @@ define([
 
         var self = this;
 
-        if(this.o.config)
-        {
+        if(this.o.config) {
             self.o.conf = this.o.config;
             self.render();        	
-        }
-        else
-        {
+        } else  {
 	        $.getJSON(this.o.url, function (data) {
 	            self.o.conf = data;
 	            self.render();
 	        }).error(function () {
-	            throw new Error('FENIX Top Menu: please specify a valid configuration file.');
+	            throw new Error('FENIX Menu: please specify a valid configuration file.');
 	        });
 	    }
     };
@@ -336,7 +333,10 @@ define([
 
     FM.prototype.selectCurrentItem = function () {
 
-        if (this.o.conf) {
+        //reset selection
+        this.$template.find('li.active').removeClass('active');
+
+        if (this.o.active) {
             this.$template.find('li[id="' + this.o.active + '"] ').addClass("active")
                 .find("a").attr("href", "#");
         } else {
@@ -347,6 +347,50 @@ define([
         }
 
         return this.$template;
+    };
+
+    FM.prototype.select = function (s) {
+
+        this.restoreCurrentItemLink();
+        this.o.active = s;
+        this.selectCurrentItem();
+    };
+
+    FM.prototype.findObjById = function( id ){
+
+        if (!this.o || !this.o.conf || !this.o.conf.items){
+             return;
+        }
+
+        var items = this.o.conf.items;
+
+        for (var i = 0 ; i < items.length; i++) {
+
+            if (items[i].hasOwnProperty('attrs') && items[i].attrs.id === id){
+                return items[i];
+            }
+        }
+    };
+
+    FM.prototype.restoreCurrentItemLink = function () {
+
+        var $currentLi = this.findActiveHTMLItem(),
+            currentObj = this.findObjById(this.o.active);
+
+        if ($currentLi.length ===0 || !currentObj) {
+            return;
+        }
+
+        return $currentLi.find('a').attr("href", currentObj.target);
+    };
+
+    FM.prototype.findActiveHTMLItem = function( ){
+
+        if (!this.$template){
+            return;
+        }
+
+        return this.o.active!=='' ? this.$template.find('li[id='+this.o.active+']') : this.$template.find('li.active');
     };
 
     FM.prototype.disableItem = function (item) {
@@ -423,30 +467,6 @@ define([
             });
         }
     };
-
-    /*FM.prototype.findActivePath = function ( items ) {
-
-     var self = this;
-
-     if (Array.isArray(items)) {
-     $(items).each(function (index, item) {
-
-     if (item.hasOwnProperty("attrs") && item.attrs.id === self.o.active) {
-     return [item];
-     } else {
-     if (item.hasOwnProperty('children')){
-     var path = self.findActivePath( item.children);
-     if (path){
-     path.unshift(item);
-     return path;
-     }
-     }
-     }
-     });
-     }
-
-     return null;
-     };*/
 
     FM.prototype.addItemsToBreadcrumb = function (path) {
 
