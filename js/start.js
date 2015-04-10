@@ -67,8 +67,15 @@ define([
         //Reset menu. Useful if the menu configuration has to change dynamically
         this.resetMenu();
 
+
+        console.log("this.$container");
+        console.log(this.$container);
+
         //Render the menu
         this.$container.prepend(this.compileTemplate());
+
+        console.log("this.$container2");
+        console.log(this.$container);
 
         this.initializeMenu();
 
@@ -225,7 +232,7 @@ define([
     FM.prototype.renderSingleItem = function ($container, item) {
 
         var $li = $("<li></li>"),
-            $a = $("<a href='" + ( item.target || '#') + "'>" + item.label[this.o.lang] + "</a>");
+            $a = $("<a href='" + (item.target || '#') + "'>" + item.label[this.o.lang] + "</a>");
 
         this.addItemAttrs($li, item);
 
@@ -429,7 +436,8 @@ define([
             this.activateItem(items);
         }
 
-        this.$template.find("li a").off('click');
+        //select all li elements that have NOT the disabled class
+        this.$template.find("li:not(.disabled) a").off('click');
     };
 
     FM.prototype.renderBreadcrumb = function () {
