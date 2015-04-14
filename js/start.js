@@ -21,14 +21,14 @@ define([
         logo: true,
         lang: "EN",
         css: 'fx-menu/css/fenix-menu.css',
-        eventPrefix : 'fx.menu.'
+        eventPrefix: 'fx.menu.'
     };
 
     function FM(o) {
-       this.refresh(o);
+        this.refresh(o);
     }
 
-    FM.prototype.refresh = function(o){
+    FM.prototype.refresh = function (o) {
 
         this.o = $.extend(true, {}, defaultOptions, o);
 
@@ -46,17 +46,17 @@ define([
 
         var self = this;
 
-        if(this.o.config) {
+        if (this.o.config) {
             self.o.conf = this.o.config;
-            self.render();        	
-        } else  {
-	        $.getJSON(this.o.url, function (data) {
-	            self.o.conf = data;
-	            self.render();
-	        }).error(function () {
-	            throw new Error('FENIX Menu: please specify a valid configuration file.');
-	        });
-	    }
+            self.render();
+        } else {
+            $.getJSON(this.o.url, function (data) {
+                self.o.conf = data;
+                self.render();
+            }).error(function () {
+                throw new Error('FENIX Menu: please specify a valid configuration file.');
+            });
+        }
     };
 
     FM.prototype.render = function () {
@@ -114,10 +114,10 @@ define([
         this.$ul.empty();
         this.$right.empty();
 
-        if (this.o.container !== 'body'){
+        if (this.o.container !== 'body') {
             this.$container.empty();
         } else {
-            var selector = this.o.className ? 'nav.fx-menu.'+ this.o.className: 'nav.fx-menu';
+            var selector = this.o.className ? 'nav.fx-menu.' + this.o.className : 'nav.fx-menu';
             $('body').find(selector).remove();
         }
     };
@@ -148,11 +148,11 @@ define([
 
     FM.prototype.customizeMenu = function () {
 
-        if (!window.fx_menu_counter){
+        if (!window.fx_menu_counter) {
             window.fx_menu_counter = 0;
         }
 
-        var klass =this.o.className ? this.o.className : (window.fx_menu_counter++);
+        var klass = this.o.className ? this.o.className : (window.fx_menu_counter++);
 
         this.$template.addClass(klass);
         this.$template.find('[data-target="#fx-navbar-collapse"]').attr('data-target', "#fx-navbar-collapse".concat(klass));
@@ -170,7 +170,7 @@ define([
             case 'fixed-bottom':
                 this.$template.addClass('navbar-fixed-bottom');
                 break;
-            case 'inverse' :
+            case 'inverse':
                 this.$template.addClass('navbar-inverse');
                 break;
             default:
@@ -199,7 +199,7 @@ define([
             } else {
                 var newpos = $(this).parent().width();
             }
-            menu.css({left: newpos});
+            menu.css({ left: newpos });
 
         });
 
@@ -217,13 +217,13 @@ define([
     FM.prototype.renderItem = function ($container, item, submenu) {
 
         switch (item.type) {
-            case 'dropdown' :
+            case 'dropdown':
                 this.renderDropdown($container, item, submenu);
                 break;
-            case 'divider' :
+            case 'divider':
                 this.renderDivider($container);
                 break;
-            default :
+            default:
                 this.renderSingleItem($container, item);
                 break;
         }
@@ -328,7 +328,7 @@ define([
         if (this.o.conf.languages) {
             $(this.o.conf.languages).each(function (index, lang) {
                 var $lang = $("<li></li>"),
-                    $a = $("<a href='" + ( lang.target || '#') + "'>" + lang.label + "</a>");
+                    $a = $("<a href='" + (lang.target || '#') + "'>" + lang.label + "</a>");
                 $lang.prepend($a);
                 $langPicker.prepend($lang);
             });
@@ -363,17 +363,17 @@ define([
         this.selectCurrentItem();
     };
 
-    FM.prototype.findObjById = function( id ){
+    FM.prototype.findObjById = function (id) {
 
-        if (!this.o || !this.o.conf || !this.o.conf.items){
-             return;
+        if (!this.o || !this.o.conf || !this.o.conf.items) {
+            return;
         }
 
         var items = this.o.conf.items;
 
         for (var i = 0 ; i < items.length; i++) {
 
-            if (items[i].hasOwnProperty('attrs') && items[i].attrs.id === id){
+            if (items[i].hasOwnProperty('attrs') && items[i].attrs.id === id) {
                 return items[i];
             }
         }
@@ -384,20 +384,20 @@ define([
         var $currentLi = this.findActiveHTMLItem(),
             currentObj = this.findObjById(this.o.active);
 
-        if ($currentLi.length ===0 || !currentObj) {
+        if ($currentLi.length === 0 || !currentObj) {
             return;
         }
 
         return $currentLi.find('a').attr("href", currentObj.target);
     };
 
-    FM.prototype.findActiveHTMLItem = function( ){
+    FM.prototype.findActiveHTMLItem = function () {
 
-        if (!this.$template){
+        if (!this.$template) {
             return;
         }
 
-        return this.o.active!=='' ? this.$template.find('li[id='+this.o.active+']') : this.$template.find('li.active');
+        return this.o.active !== '' ? this.$template.find('li[id=' + this.o.active + ']') : this.$template.find('li.active');
     };
 
     FM.prototype.disableItem = function (item) {
@@ -415,7 +415,7 @@ define([
             this.disableItem(items);
         }
 
-        this.$template.find("li.disabled a").on('click', function (e) {
+        this.$template.find("li.disabled").on('click', function (e) {
             e.preventDefault();
             return false;
         });
@@ -437,7 +437,7 @@ define([
         }
 
         //select all li elements that have NOT the disabled class
-        this.$template.find("li:not(.disabled) a").off('click');
+        this.$template.find("li:not(.disabled)").off('click');
     };
 
     FM.prototype.renderBreadcrumb = function () {
