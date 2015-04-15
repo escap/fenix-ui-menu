@@ -67,15 +67,8 @@ define([
         //Reset menu. Useful if the menu configuration has to change dynamically
         this.resetMenu();
 
-
-        console.log("this.$container");
-        console.log(this.$container);
-
         //Render the menu
         this.$container.prepend(this.compileTemplate());
-
-        console.log("this.$container2");
-        console.log(this.$container);
 
         this.initializeMenu();
 
