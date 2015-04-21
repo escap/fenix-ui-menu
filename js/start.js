@@ -12,6 +12,8 @@ define([
     var defaultOptions = {
         container: 'body',
         url: 'fx-menu/config/default.json',
+        hiddens: [],
+        config: null,        
         template: template,
         selectors: {
             brand: ".navbar-brand",
@@ -47,7 +49,7 @@ define([
         var self = this;
 
         if (this.o.config) {
-            self.o.conf = this.o.config;
+            self.o.conf = self.o.config;
             self.render();
         } else {
             $.getJSON(this.o.url, function (data) {
@@ -66,6 +68,9 @@ define([
 
         //Reset menu. Useful if the menu configuration has to change dynamically
         this.resetMenu();
+
+        //TODO
+        this.resetBreadcrumb();
 
         //Render the menu
         this.$container.prepend(this.compileTemplate());
@@ -114,6 +119,11 @@ define([
             $('body').find(selector).remove();
         }
     };
+
+    FM.prototype.resetBreadcrumb = function () {
+        if(this.o.breadcrumb && this.o.breadcrumb.container)
+        	$(this.o.breadcrumb.container).empty();
+    };    
 
     FM.prototype.importCss = function () {
 
@@ -201,9 +211,9 @@ define([
     FM.prototype.renderItems = function ($ul, items) {
 
         var self = this;
-
         $(items).each(function (index, item) {
-            self.renderItem($ul, item);
+	    	if(self.o.hiddens.indexOf(item.attrs.id)===-1)
+            	self.renderItem($ul, item);
         });
     };
 
@@ -225,7 +235,7 @@ define([
     FM.prototype.renderSingleItem = function ($container, item) {
 
         var $li = $("<li></li>"),
-            $a = $("<a href='" + (item.target || '#') + "'>" + item.label[this.o.lang] + "</a>");
+            $a = $('<a href="' + (item.target || '#') + '">' + item.label[this.o.lang] + '</a>');
 
         this.addItemAttrs($li, item);
 
@@ -321,7 +331,7 @@ define([
         if (this.o.conf.languages) {
             $(this.o.conf.languages).each(function (index, lang) {
                 var $lang = $("<li></li>"),
-                    $a = $("<a href='" + (lang.target || '#') + "'>" + lang.label + "</a>");
+                    $a = $('<a href="' + (lang.target || '#') + '">' + lang.label + '</a>');
                 $lang.prepend($a);
                 $langPicker.prepend($lang);
             });
@@ -337,12 +347,10 @@ define([
         this.$template.find('li.active').removeClass('active');
 
         if (this.o.active) {
-            this.$template.find('li[id="' + this.o.active + '"] ').addClass("active")
-                .find("a").attr("href", "#");
+            this.$template.find('li[id="' + this.o.active + '"] ').addClass("active");
         } else {
             if (this.o.conf.active) {
-                this.$template.find('li[id="' + this.o.conf.active + '"] ').addClass("active")
-                    .find("a").attr("href", "#");
+                this.$template.find('li[id="' + this.o.conf.active + '"] ').addClass("active");
             }
         }
 
