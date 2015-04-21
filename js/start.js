@@ -68,8 +68,6 @@ define([
 
         //Reset menu. Useful if the menu configuration has to change dynamically
         this.resetMenu();
-
-        //TODO
         this.resetBreadcrumb();
 
         //Render the menu
