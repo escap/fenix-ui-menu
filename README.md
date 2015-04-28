@@ -51,6 +51,9 @@ require([
 + container: where the menu has to be displayed. It is optional and default is 'body'. Use it only with type='static-top'.
 + css: URL of the style sheet.
 + eventPrefix: On click on any menu item an AmplifyJS event is risen. The event topic is formed by this parameter concatenated to the item id if present, or in substitution the suffix 'item'. The item is sent as event payload.
++ footer : configuration for footer menu
+    + active : boolean, activate or deactivate the footer menu rendering
+    + container : where the footer menu has to be displayed
 + importCss: set to 'true' to import the Css style sheet specified in the 'css' params.
 + lang: language of the labels to display.
 + url: URL of the configuration file.
