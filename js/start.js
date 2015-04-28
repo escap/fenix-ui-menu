@@ -1,4 +1,4 @@
-/*global define*/
+/*global define, amplify, console*/
 define([
     "jquery",
     "require",
@@ -91,6 +91,12 @@ define([
             this.renderBreadcrumb();
         }
 
+        // Create footer menu
+        if (this.o.hasOwnProperty('footer') && this.o.footer.active === true) {
+            this.renderFooterMenu();
+        }
+
+
         if (this.o.hasOwnProperty('callback') && typeof this.o.callback === 'function') {
             this.o.callback();
         }
@@ -119,8 +125,10 @@ define([
     };
 
     FM.prototype.resetBreadcrumb = function () {
-        if(this.o.breadcrumb && this.o.breadcrumb.container)
-        	$(this.o.breadcrumb.container).empty();
+        if(this.o.breadcrumb && this.o.breadcrumb.container){
+            $(this.o.breadcrumb.container).empty();
+        }
+
     };    
 
     FM.prototype.importCss = function () {
@@ -193,12 +201,13 @@ define([
             $(this).parent().addClass('open');
 
             var menu = $(this).parent().find("ul");
-            var menupos = menu.offset();
+            var menupos = menu.offset(),
+                newpos;
 
             if ((menupos.left + menu.width()) + 30 > $(window).width()) {
-                var newpos = -menu.width();
+                newpos = -menu.width();
             } else {
-                var newpos = $(this).parent().width();
+                newpos = $(this).parent().width();
             }
             menu.css({ left: newpos });
 
@@ -210,8 +219,10 @@ define([
 
         var self = this;
         $(items).each(function (index, item) {
-	    	if(self.o.hiddens.indexOf(item.attrs.id)===-1)
-            	self.renderItem($ul, item);
+	    	if(self.o.hiddens.indexOf(item.attrs.id)===-1){
+                self.renderItem($ul, item);
+            }
+
         });
     };
 
@@ -244,7 +255,7 @@ define([
                 topic += item.attrs.id ? item.attrs.id : 'item';
             }
 
-            amplify.publish(topic, item)
+            amplify.publish(topic, item);
         }, this));
 
         $li.append($a);
@@ -268,10 +279,10 @@ define([
         $li.append($a).append($children);
 
         //Append dropdown children
-        if (item.hasOwnProperty('children') && item['children'] !== null) {
-            for (var i = 0; i < item['children'].length; i++) {
+        if (item.hasOwnProperty('children') && item.children !== null) {
+            for (var i = 0; i < item.children.length; i++) {
 
-                self.renderItem($children, item['children'][i], true);
+                self.renderItem($children, item.children[i], true);
             }
         }
 
@@ -287,11 +298,11 @@ define([
     FM.prototype.addItemAttrs = function ($item, conf) {
 
         if (conf.hasOwnProperty('attrs')) {
-            var attrs = Object.keys(conf['attrs']);
+            var attrs = Object.keys(conf.attrs);
 
             for (var i = 0; i < attrs.length; i++) {
-                if (conf['attrs'].hasOwnProperty(attrs[i])) {
-                    $item.attr(attrs[i], conf['attrs'][attrs[i]]);
+                if (conf.attrs.hasOwnProperty(attrs[i])) {
+                    $item.attr(attrs[i], conf.attrs[attrs[i]]);
                 }
             }
         }
@@ -315,8 +326,9 @@ define([
 
     FM.prototype.renderLeftItems = function () {
 
-        if (this.o.conf.left) {
-        }
+       /* if (this.o.conf.left) {
+
+        }*/
 
         return this.$template;
     };
@@ -360,6 +372,11 @@ define([
         this.restoreCurrentItemLink();
         this.o.active = s;
         this.selectCurrentItem();
+
+        // Update breadcrumb
+        if (this.o.hasOwnProperty('breadcrumb') && this.o.breadcrumb.active === true) {
+            this.renderBreadcrumb();
+        }
     };
 
     FM.prototype.findObjById = function (id) {
@@ -439,11 +456,13 @@ define([
         this.$template.find("li:not(.disabled)").off('click');
     };
 
+    //Breadcrumb
+
     FM.prototype.renderBreadcrumb = function () {
 
         if (!this.o.breadcrumb.hasOwnProperty('container') || $(this.o.breadcrumb.container).length === 0) {
             console.error("FENIX menu: impossible to find breadcrumb container");
-            return
+            return;
         }
 
         this.findActivePath({
@@ -461,13 +480,13 @@ define([
             $(obj.items).each(function (index, item) {
 
                 var o = $.extend(true, {}, obj);
-                o['path'].push(item);
+                o.path.push(item);
 
                 if (item.hasOwnProperty("attrs") && item.attrs.id === self.o.active) {
-                    o.callback(o['path']);
+                    o.callback(o.path);
                 } else {
                     if (item.hasOwnProperty('children')) {
-                        o['items'] = item.children;
+                        o.items = item.children;
                         self.findActivePath(o);
                     }
                 }
@@ -483,7 +502,7 @@ define([
             'class': 'breadcrumb'
         });
 
-        $(this.o.breadcrumb.container).append(this.$brList);
+        $(this.o.breadcrumb.container).html(this.$brList);
 
         //Show always a link to home
         if (this.o.breadcrumb.showHome === true) {
@@ -508,6 +527,43 @@ define([
             });
 
         this.$brList.append($li.append($a));
+    };
+
+    //Footer
+
+    FM.prototype.renderFooterMenu = function () {
+
+        var self = this;
+
+        if (!this.o.footer.hasOwnProperty('container') || $(this.o.footer.container).length === 0) {
+            console.error("FENIX menu: impossible to find footer container");
+            return;
+        }
+
+        this.$footerContainer =$('<ul>');
+
+        $(this.o.conf.items).each(function (index, item) {
+
+            if(self.o.hiddens.indexOf(item.attrs.id)===-1){
+                self.appendFootertem(item, (item === self.o.conf.items.length));
+            }
+        });
+
+        $(this.o.footer.container).append(this.$footerContainer);
+
+    };
+
+    FM.prototype.appendFootertem = function (item, isLast) {
+
+        var $li = $('<li>'),
+            $a = $('<a>', {
+                href: item.target,
+                'class': isLast ? 'active' : '',
+                text: item.label[this.o.lang]
+            });
+
+        this.$footerContainer.append($li.append($a));
+
     };
 
     return FM;

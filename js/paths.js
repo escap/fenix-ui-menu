@@ -20,7 +20,7 @@ define(function () {
             },
             amplify: {
                 deps: ['jquery'],
-                exports: 'amplifyjs'
+                exports: 'amplify'
             }
         }
     };
