@@ -13,7 +13,7 @@ define([
         container: 'body',
         url: 'fx-menu/config/default.json',
         hiddens: [],
-        config: null,        
+        config: null,
         template: template,
         selectors: {
             brand: ".navbar-brand",
@@ -125,11 +125,11 @@ define([
     };
 
     FM.prototype.resetBreadcrumb = function () {
-        if(this.o.breadcrumb && this.o.breadcrumb.container){
+        if (this.o.breadcrumb && this.o.breadcrumb.container) {
             $(this.o.breadcrumb.container).empty();
         }
 
-    };    
+    };
 
     FM.prototype.importCss = function () {
 
@@ -209,7 +209,7 @@ define([
             } else {
                 newpos = $(this).parent().width();
             }
-            menu.css({ left: newpos });
+            menu.css({left: newpos});
 
         });
 
@@ -219,7 +219,7 @@ define([
 
         var self = this;
         $(items).each(function (index, item) {
-	    	if(self.o.hiddens.indexOf(item.attrs.id)===-1){
+            if (self.o.hiddens.indexOf(item.attrs.id) === -1) {
                 self.renderItem($ul, item);
             }
 
@@ -326,9 +326,9 @@ define([
 
     FM.prototype.renderLeftItems = function () {
 
-       /* if (this.o.conf.left) {
+        /* if (this.o.conf.left) {
 
-        }*/
+         }*/
 
         return this.$template;
     };
@@ -387,7 +387,7 @@ define([
 
         var items = this.o.conf.items;
 
-        for (var i = 0 ; i < items.length; i++) {
+        for (var i = 0; i < items.length; i++) {
 
             if (items[i].hasOwnProperty('attrs') && items[i].attrs.id === id) {
                 return items[i];
@@ -540,18 +540,31 @@ define([
             return;
         }
 
-        this.$footerContainer =$('<ul>');
+        this.$footerContainer = $('<ul>');
 
         $(this.o.conf.items).each(function (index, item) {
+            // if there is any children , show the first level of them
+            if (item.children) {
 
-            if(self.o.hiddens.indexOf(item.attrs.id)===-1){
-                self.appendFootertem(item, (item === self.o.conf.items.length));
+                $.each(item.children, function (indexChild, itemChild) {
+                    self.checkAndAppendInFooter(itemChild);
+                });
+            }
+            else {
+                self.checkAndAppendInFooter(item);
             }
         });
 
         $(this.o.footer.container).append(this.$footerContainer);
 
     };
+
+
+    FM.prototype.checkAndAppendInFooter = function (item) {
+        if (this.o.hiddens.indexOf(item.attrs.id) === -1) {
+            this.appendFootertem(item, (item === this.o.conf.items.length));
+        }
+    }
 
     FM.prototype.appendFootertem = function (item, isLast) {
 
