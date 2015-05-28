@@ -2,19 +2,18 @@
 define([
     "jquery",
     "require",
-    "text!fx-menu/templates/blank.html",
     "amplify",
     "bootstrap"
-], function ($, Require, template) {
+], function ($, Require) {
 
     'use strict';
 
     var defaultOptions = {
         container: 'body',
         url: 'fx-menu/config/default.json',
+        config: null,        
         hiddens: [],
-        config: null,
-        template: template,
+        template: 'fx-menu/templates/blank.html',
         selectors: {
             brand: ".navbar-brand",
             ul: ".fx-ul",
@@ -104,7 +103,21 @@ define([
     };
 
     FM.prototype.initVariables = function () {
-        this.$template = $(this.o.template);
+    	
+    	console.log('options',this.o);
+
+    	var that = this;
+    	if(this.o.template===defaultOptions.template)
+    		$.ajax({
+    			url: Require.toUrl(defaultOptions.template),
+    			async: false,
+    			success: function(html) {
+					that.$template = $(html);
+				}
+    		});
+    	else
+    		this.$template = $(this.o.template);
+        
         this.$ul = this.$template.find(this.o.selectors.ul);
         this.$brand = this.$template.find(this.o.selectors.brand);
         this.$right = this.$template.find(this.o.selectors.right);
