@@ -105,7 +105,7 @@ define([
     FM.prototype.initVariables = function () {
     	
     	var that = this;
-    	if(this.o.template===defaultOptions.template)
+    	if(this.o.template === defaultOptions.template)
     		$.ajax({
     			url: Require.toUrl(defaultOptions.template),
     			async: false,
@@ -119,7 +119,11 @@ define([
         this.$ul = this.$template.find(this.o.selectors.ul);
         this.$brand = this.$template.find(this.o.selectors.brand);
         this.$right = this.$template.find(this.o.selectors.right);
-        this.$container = $(this.o.container);
+        
+        if(this.o.template instanceof $)
+        	this.$container = this.o.template.parent();
+		else
+			this.$container = $(this.o.container);
     };
 
     FM.prototype.resetMenu = function () {
