@@ -104,8 +104,6 @@ define([
 
     FM.prototype.initVariables = function () {
     	
-    	console.log('options',this.o);
-
     	var that = this;
     	if(this.o.template===defaultOptions.template)
     		$.ajax({
