@@ -103,19 +103,17 @@ define([
     };
 
     FM.prototype.initVariables = function () {
-    	
-    	var that = this;
-    	if(this.o.template === defaultOptions.template)
-    		$.ajax({
-    			url: Require.toUrl(defaultOptions.template),
-    			async: false,
-    			success: function(html) {
-					that.$template = $(html);
-				}
-    		});
-    	else
-    		this.$template = $(this.o.template);
-        
+
+    	var that = this,
+            url = this.o.template || defaultOptions.template;
+
+        $.ajax({
+            url: Require.toUrl(url),
+            async: false,
+            success: function(html) {
+                that.$template = $(html);
+            }
+        });
         this.$ul = this.$template.find(this.o.selectors.ul);
         this.$brand = this.$template.find(this.o.selectors.brand);
         this.$right = this.$template.find(this.o.selectors.right);
@@ -196,6 +194,9 @@ define([
                 break;
             case 'inverse':
                 this.$template.addClass('navbar-inverse');
+                break;
+            case 'inverse':
+                this.$template.addClass('sidemenu');
                 break;
             default:
                 this.$template.addClass('navbar-static-top');
@@ -574,14 +575,13 @@ define([
 
     };
 
-
     FM.prototype.checkAndAppendInFooter = function (item) {
         if (this.o.hiddens.indexOf(item.attrs.id) === -1) {
-            this.appendFootertem(item, (item === this.o.conf.items.length));
+            this.appendFooterItem(item, (item === this.o.conf.items.length));
         }
-    }
+    };
 
-    FM.prototype.appendFootertem = function (item, isLast) {
+    FM.prototype.appendFooterItem = function (item, isLast) {
 
         var $li = $('<li>'),
             $a = $('<a>', {
