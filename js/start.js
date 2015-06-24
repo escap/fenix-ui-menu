@@ -17,7 +17,7 @@ define([
         selectors: {
             brand: ".navbar-brand",
             ul: ".fx-ul",
-            right: ".navbar-right"
+            right: ".fx-ul-right"
         },
         logo: true,
         lang: "EN",
@@ -195,7 +195,7 @@ define([
             case 'inverse':
                 this.$template.addClass('navbar-inverse');
                 break;
-            case 'inverse':
+            case 'sidemenu':
                 this.$template.addClass('sidemenu');
                 break;
             default:
