@@ -107,13 +107,19 @@ define([
     	var that = this,
             url = this.o.template || defaultOptions.template;
 
-        $.ajax({
-            url: Require.toUrl(url),
-            async: false,
-            success: function(html) {
-                that.$template = $(html);
-            }
-        });
+        if(typeof url === 'string') {
+            url = Require.toUrl(url);
+            $.ajax({
+                url: url,
+                async: false,
+                success: function(html) {
+                    that.$template = $(html);
+                }
+            });
+        }
+        else
+            this.$template = $(this.o.template);
+
         this.$ul = this.$template.find(this.o.selectors.ul);
         this.$brand = this.$template.find(this.o.selectors.brand);
         this.$right = this.$template.find(this.o.selectors.right);
