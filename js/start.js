@@ -11,7 +11,7 @@ define([
     var defaultOptions = {
         container: 'body',
         url: 'fx-menu/config/default.json',
-        config: null,        
+        config: null,
         hiddens: [],
         template: 'fx-menu/templates/blank.html',
         selectors: {
@@ -104,15 +104,15 @@ define([
 
     FM.prototype.initVariables = function () {
 
-    	var that = this,
+        var that = this,
             url = this.o.template || defaultOptions.template;
 
-        if(typeof url === 'string') {
+        if (typeof url === 'string') {
             url = Require.toUrl(url);
             $.ajax({
                 url: url,
                 async: false,
-                success: function(html) {
+                success: function (html) {
                     that.$template = $(html);
                 }
             });
@@ -123,11 +123,11 @@ define([
         this.$ul = this.$template.find(this.o.selectors.ul);
         this.$brand = this.$template.find(this.o.selectors.brand);
         this.$right = this.$template.find(this.o.selectors.right);
-        
-        if(this.o.template instanceof $)
-        	this.$container = this.o.template.parent();
-		else
-			this.$container = $(this.o.container);
+
+        if (this.o.template instanceof $)
+            this.$container = this.o.template.parent();
+        else
+            this.$container = $(this.o.container);
     };
 
     FM.prototype.resetMenu = function () {
@@ -266,9 +266,15 @@ define([
     FM.prototype.renderSingleItem = function ($container, item) {
 
         var $li = $("<li></li>"),
-            $a = $('<a href="' + (item.target || '#') + '">' + item.label[this.o.lang] + '</a>');
+            $a = $('<a>' + item.label[this.o.lang] + '</a>');
+
+        if (item.target) {
+            $a.attr('href', item.target);
+        }
 
         this.addItemAttrs($li, item);
+
+        this.addAAttrs($a, item);
 
         $a.on('click', $.proxy(function () {
             var topic = this.o.eventPrefix;
@@ -330,6 +336,22 @@ define([
         }
 
         return $item;
+    };
+
+    FM.prototype.addAAttrs = function ($a, conf) {
+
+        if (conf.hasOwnProperty('a_attrs')) {
+
+            var attrs = Object.keys(conf.a_attrs);
+
+            for (var i = 0; i < attrs.length; i++) {
+                if (conf.a_attrs.hasOwnProperty(attrs[i])) {
+                    $a.attr(attrs[i], conf.a_attrs[attrs[i]]);
+                }
+            }
+        }
+
+        return $a;
     };
 
     FM.prototype.renderBrand = function () {
