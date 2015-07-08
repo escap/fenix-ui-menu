@@ -414,8 +414,12 @@ define([
     FM.prototype.select = function (s) {
 
         this.restoreCurrentItemLink();
+
         this.o.active = s;
+
         this.selectCurrentItem();
+
+        $('body').attr('data-page', this.o.active);
 
         // Update breadcrumb
         if (this.o.hasOwnProperty('breadcrumb') && this.o.breadcrumb.active === true) {
