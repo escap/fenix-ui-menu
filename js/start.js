@@ -550,6 +550,7 @@ define([
             'class': 'breadcrumb'
         });
 
+        $(this.o.breadcrumb.container).empty();
         $(this.o.breadcrumb.container).html(this.$brList);
 
         //Show always a link to home
@@ -603,6 +604,7 @@ define([
             }
         });
 
+        $(this.o.footer.container).empty();
         $(this.o.footer.container).append(this.$footerContainer);
 
     };
