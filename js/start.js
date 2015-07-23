@@ -423,7 +423,7 @@ define([
 
         // Update breadcrumb
         if (this.o.hasOwnProperty('breadcrumb') && this.o.breadcrumb.active === true) {
-            this.renderBreadcrumb();
+            //this.renderBreadcrumb();
         }
     };
 
