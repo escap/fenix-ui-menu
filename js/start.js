@@ -583,6 +583,7 @@ define([
     FM.prototype.renderFooterMenu = function () {
 
         var self = this;
+        debugger;
 
         if (!this.o.footer.hasOwnProperty('container') || $(this.o.footer.container).length === 0) {
             console.error("FENIX menu: impossible to find footer container");
