@@ -423,7 +423,7 @@ define([
 
         // Update breadcrumb
         if (this.o.hasOwnProperty('breadcrumb') && this.o.breadcrumb.active === true) {
-            //this.renderBreadcrumb();
+            this.renderBreadcrumb();  // tm: THIS WAS PREVIOUSLY COMMENTED OUT, BUT NEEDED FOR BREADCRUMBS!
         }
     };
 
@@ -507,7 +507,6 @@ define([
     //Breadcrumb
 
     FM.prototype.renderBreadcrumb = function () {
-
         if (!this.o.breadcrumb.hasOwnProperty('container') || $(this.o.breadcrumb.container).length === 0) {
             console.error("FENIX menu: impossible to find breadcrumb container");
             return;
