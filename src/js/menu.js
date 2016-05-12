@@ -13,7 +13,7 @@ define([
         url: 'fx-menu/config/default.json',
         config: null,
         hiddens: [],
-        template: 'fx-menu/templates/blank.html',
+        template: 'fx-menu/html/blank.html',
         selectors: {
             brand: ".navbar-brand",
             ul: ".fx-ul",
