@@ -4,8 +4,9 @@ define(function () {
 
         paths:  {
 
-            'fx-menu/start': './start',
-            'fx-menu/templates': '../templates/',
+            'fx-menu/start': './menu',
+            'fx-menu/html': '../../html/',
+            'fx-menu/config' :  '../../config',
 
             'jquery': '{FENIX_CDN}/js/jquery/2.1.1/jquery.min',
             'bootstrap': '{FENIX_CDN}/js/bootstrap/3.2/js/bootstrap.min',
@@ -14,7 +15,6 @@ define(function () {
         },
 
         shim: {
-
             "bootstrap": {
                 deps: ["jquery"]
             },

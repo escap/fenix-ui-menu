@@ -13,7 +13,7 @@ define([
         url: 'fx-menu/config/default.json',
         config: null,
         hiddens: [],
-        template: 'fx-menu/templates/blank.html',
+        template: 'fx-menu/html/blank.html',
         selectors: {
             brand: ".navbar-brand",
             ul: ".fx-ul",
@@ -51,7 +51,8 @@ define([
             self.o.conf = self.o.config;
             self.render();
         } else {
-            $.getJSON(this.o.url, function (data) {
+
+            $.getJSON(Require.toUrl(this.o.url), function (data) {
                 self.o.conf = data;
                 self.render();
             }).error(function () {
@@ -106,7 +107,6 @@ define([
 
         var that = this,
             url = this.o.template || defaultOptions.template;
-
         if (typeof url === 'string') {
             url = Require.toUrl(url);
             $.ajax({
