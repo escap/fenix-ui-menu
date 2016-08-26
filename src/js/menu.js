@@ -54,11 +54,33 @@ define([
 
             $.getJSON(Require.toUrl(this.o.url), function (data) {
                 self.o.conf = data;
-                self.render();
+                self.preloadTemplate();
             }).error(function () {
                 throw new Error('FENIX Menu: please specify a valid configuration file.');
             });
         }
+    };
+
+    FM.prototype.preloadTemplate = function () {
+
+        var that = this,
+            url = this.o.template || defaultOptions.template;
+        if (typeof url === 'string') {
+            url = Require.toUrl(url);
+            $.ajax({
+                url: url,
+                success: function (html) {
+                    that.$template = $(html);
+                    that.render();
+                }
+            });
+        }
+        else{
+            this.$template = $(this.o.template);
+            that.render();
+        }
+
+
     };
 
     FM.prototype.render = function () {
@@ -104,21 +126,6 @@ define([
     };
 
     FM.prototype.initVariables = function () {
-
-        var that = this,
-            url = this.o.template || defaultOptions.template;
-        if (typeof url === 'string') {
-            url = Require.toUrl(url);
-            $.ajax({
-                url: url,
-                async: false,
-                success: function (html) {
-                    that.$template = $(html);
-                }
-            });
-        }
-        else
-            this.$template = $(this.o.template);
 
         this.$ul = this.$template.find(this.o.selectors.ul);
         this.$brand = this.$template.find(this.o.selectors.brand);
