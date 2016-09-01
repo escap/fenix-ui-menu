@@ -10,7 +10,7 @@ It is possible to configure the component passing the URL of the configuration o
 
  ```
  require([
-        'js/fenix-menu'
+        'fenix-ui-menu'
     ], function (Menu) {
 
         var menu = new Menu({
