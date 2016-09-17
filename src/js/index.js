@@ -3,10 +3,8 @@ define([
     "../html/blank.hbs",
     "../html/blank-fluid.hbs",
     "../html/side.hbs",
-    "amplify-pubsub",
-    "./dropdown",
-    "bootstrap"
-], function ($, templateBlank, templateBlankFluid, templateSide, amplify, Dropdown) {
+    "amplify-pubsub"
+], function ($, templateBlank, templateBlankFluid, templateSide, amplify) {
 
     'use strict';
 
@@ -612,8 +610,6 @@ define([
         this.$footerContainer.append($li.append($a));
 
     };
-
-    FM.Dropdown = Dropdown;
 
     return FM;
 });
