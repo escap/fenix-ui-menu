@@ -43,6 +43,15 @@ define(function(){
                     "EN": "Thematic modules",
                     "FR": "Modules thématiques"
                 }
+            },
+            {
+                "attrs": {
+                    "id": "notarget"
+                },
+                "label": {
+                    "EN": "No Target",
+                    "FR": "No Target [FR]"
+                }
             }
         ],
         "rightItems": [
@@ -105,7 +114,6 @@ define(function(){
                 }
             }
         ],
-        "type": "sidemenu",
         "brand": {
             "target": "index.html"
         },

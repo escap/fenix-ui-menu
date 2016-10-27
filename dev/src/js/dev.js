@@ -44,6 +44,7 @@ define([
         var menu = this.createInstance({
             config : Model
         });
+
     };
 
     //Utils

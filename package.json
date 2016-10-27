@@ -1,6 +1,6 @@
 {
   "name": "fenix-ui-menu",
-  "version": "3.0.0-beta.1",
+  "version": "3.0.0-beta.3",
   "description": "FENIX top menu, based on fixed to top Twitter Bootstrap menu",
   "main": "dist/fenix-ui-menu.min.js",
   "scripts": {

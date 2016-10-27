@@ -113,7 +113,36 @@ define([
 
     };
 
+    /**
+     * pub/sub
+     * @return {Object} component instance
+     */
+    FM.prototype.on = function (channel, fn, context) {
+        var _context = context || this;
+        if (!this.channels[channel]) {
+            this.channels[channel] = [];
+        }
+        this.channels[channel].push({context: _context, callback: fn});
+        return this;
+    };
+
+    FM.prototype._trigger = function (channel) {
+
+        if (!this.channels[channel]) {
+            return false;
+        }
+        var args = Array.prototype.slice.call(arguments, 1);
+        for (var i = 0, l = this.channels[channel].length; i < l; i++) {
+            var subscription = this.channels[channel][i];
+            subscription.callback.apply(subscription.context, args);
+        }
+
+        return this;
+    };
+
     FM.prototype.initVariables = function () {
+
+        this.channels = {};
 
         this.$ul = this.$template.find(this.o.selectors.ul);
         this.$brand = this.$template.find(this.o.selectors.brand);
@@ -266,6 +295,8 @@ define([
             if (item.hasOwnProperty('attrs')) {
                 topic += item.attrs.id ? item.attrs.id : 'item';
             }
+
+            this._trigger("select", { id: item.attrs.id});
 
             amplify.publish(topic, item);
         }, this));
