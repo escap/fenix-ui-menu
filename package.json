@@ -1,6 +1,6 @@
 {
   "name": "fenix-ui-menu",
-  "version": "3.0.0-beta.3",
+  "version": "3.0.0-beta.4",
   "description": "FENIX top menu, based on fixed to top Twitter Bootstrap menu",
   "main": "dist/fenix-ui-menu.min.js",
   "scripts": {
@@ -25,11 +25,10 @@
   "homepage": "https://github.com/FENIX-Platform/fenix-ui-menu",
   "dependencies": {
     "amplify-pubsub": "^0.0.1",
+    "bootstrap": "^3.3.7",
     "jquery": "^3.1.0"
   },
   "devDependencies": {
-    "bootstrap-loader": "^2.0.0-beta.11",
-    "bootstrap-sass": "^3.3.7",
     "chai": "^3.5.0",
     "clean-webpack-plugin": "^0.1.10",
     "css-loader": "^0.25.0",
@@ -51,13 +50,11 @@
     "karma-webpack": "^1.8.0",
     "loglevel": "^1.4.1",
     "mocha": "^3.0.2",
-    "node-sass": "^3.10.0",
     "resolve-url-loader": "^1.6.0",
-    "sass-loader": "^4.0.2",
     "style-loader": "^0.13.1",
     "underscore": "^1.8.3",
     "url-loader": "^0.5.7",
-    "webpack": "^1.13.2",
+    "webpack": "^1.13.3",
     "webpack-dev-server": "^1.15.1"
   }
 }

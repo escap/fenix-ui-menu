@@ -3,7 +3,8 @@ define([
     "../html/blank.hbs",
     "../html/blank-fluid.hbs",
     "../html/side.hbs",
-    "amplify-pubsub"
+    "amplify-pubsub",
+    "bootstrap"
 ], function ($, templateBlank, templateBlankFluid, templateSide, amplify) {
 
     'use strict';
